@@ -12,7 +12,7 @@ export default function Index() {
         <div className="container">
           <div id="welcome">
             <h1>
-              <span> Hello corp-ui, </span>
+              <span> Hello corpai, </span>
               Welcome corpai-ui 👋
             </h1>
           </div>
