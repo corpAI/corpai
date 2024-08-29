@@ -1,0 +1,9 @@
+{
+  "name": "corpai-ui-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/corpai-ui-e2e/src",
+  "tags": [],
+  "implicitDependencies": ["corpai-ui"],
+  "// targets": "to see all targets run: nx show project corpai-ui-e2e --web",
+  "targets": {}
+}
