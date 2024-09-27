@@ -24,7 +24,7 @@ export default function Login() {
       console.log('Login successful:', response.data.token);
       const token = response.data.token;
       localStorage.setItem('token', token);
-      router.push('/configurations'); // Use Next.js router for navigation
+      router.push('/chat'); // Use Next.js router for navigation
     } catch (err) {
       setError('Invalid credentials');
     }
@@ -37,7 +37,7 @@ export default function Login() {
       });
       const token = result.data.token;
       localStorage.setItem('token', token);
-      router.push('/configurations'); // Use Next.js router for navigation
+      router.push('/chat'); // Use Next.js router for navigation
       console.log('Google Login successful:', result.data.token);
     } catch (err) {
       setError('Google login failed');

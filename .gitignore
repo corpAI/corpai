@@ -3,3 +3,4 @@
 .DS_Store
 /corpai-backend/.venv
 /corpai-backend/.venv
+corpai-backend/.env
