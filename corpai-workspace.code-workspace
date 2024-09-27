@@ -2,9 +2,6 @@
 	"folders": [
 		{
 			"path": "corpai-ui"
-		},
-		{
-			"path": "corpai-backend"
 		}
 	]
 }
