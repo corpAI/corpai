@@ -1,8 +1,7 @@
-fastapi
-strawberry-graphql
-psycopg2-binary
-sqlalchemy
-alembic
+Flask
+flask-cors
+flask-jwt-extended
 boto3
-pydantic
-uvicorn
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
