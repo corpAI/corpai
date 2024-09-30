@@ -22,10 +22,12 @@ jobs:
         with:
           python-version: '3.8'
 
-      # Step 3: Navigate to backend directory and install dependencies
-      - name: Install dependencies
+      # Step 3: Navigate to backend directory, create and activate virtual environment, and install dependencies
+      - name: Set up virtual environment and install dependencies
         working-directory: ./corpai-backend  # Set the working directory to corpai-backend
         run: |
+          python -m venv venv
+          source venv/bin/activate
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install zappa
@@ -44,10 +46,12 @@ jobs:
         env:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: |
+          source venv/bin/activate
           zappa deploy dev || zappa update dev
 
       # Step 6: Post-deployment check
       - name: Check deployment status
         working-directory: ./corpai-backend
         run: |
+          source venv/bin/activate
           zappa status dev
