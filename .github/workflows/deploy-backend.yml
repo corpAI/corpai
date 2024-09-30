@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'corpai-backend/**'  # Trigger workflow only when changes are made in the backend folder
+      - 'corpai-backend/**'
 
 jobs:
   deploy-backend:
@@ -37,7 +37,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install zappa
-          zappa deploy dev || zappa update dev
+          zappa undeploy dev --yes || true
+          zappa deploy dev
 
       # Step 4: Post-deployment check
       - name: Check deployment status
