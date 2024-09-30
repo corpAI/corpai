@@ -1,6 +1,7 @@
 {
     "dev": {
         "app_function": "app.app",
+        "aws_region": "us-west-2",
         "exclude": [
             "boto3",
             "dateutil",
