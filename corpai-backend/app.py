@@ -8,7 +8,7 @@ from s3_and_bedrock import bedrock_bp
 from dotenv import load_dotenv
 import os
 
-# Load environment variables from .env file
+# Load environment variables from .env file - helps in both local and prod
 load_dotenv()
 
 app = Flask(__name__)
