@@ -1,0 +1,53 @@
+.navbar {
+    height: 100vh;
+    width: 200px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #333;
+    padding-top: 20px;
+    transition: width 0.3s ease;
+    overflow: hidden;
+  }
+  
+  .collapsed {
+    width: 50px; /* Adjust width when collapsed */
+  }
+  
+  .collapse-button {
+    background-color: transparent;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    margin: 10px;
+    padding: 5px;
+  }
+  
+  .nav-list {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 20px; /* Ensure some space after the collapse button */
+  }
+  
+  .nav-list li {
+    padding: 10px 0;
+  }
+  
+  .nav-link {
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    display: block;
+    transition: opacity 0.3s ease;
+  }
+  
+  .collapsed .nav-link {
+    opacity: 0; /* Hide the text when collapsed */
+  }
+  
+  .nav-link:hover {
+    background-color: #575757;
+    border-radius: 5px;
+  }
+  

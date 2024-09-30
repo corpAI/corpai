@@ -1,22 +1,24 @@
 .chat-container {
+  height: 100vh;
+  width: 100vw;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
-  background-color: #f5f7fa;
+  margin: 0;
+  padding: 0;
 }
 
 .chat-window {
-  width: 400px;
-  height: 600px;
+  width: 98%;
+  height: 90%;
   background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 20px;
+  border-radius: 8px;
+  box-sizing: border-box; /* Ensure padding doesn't cause overflow */
 }
 
 .messages {
@@ -51,6 +53,7 @@
   padding: 10px;
   border-radius: 5px;
   border: 1px solid #ccc;
+  width: 99%;
 }
 
 .submit-button {
