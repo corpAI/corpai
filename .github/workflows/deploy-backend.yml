@@ -22,15 +22,14 @@ jobs:
         with:
           python-version: '3.8'
 
-      # Step 3: Navigate to backend directory, create and activate virtual environment, and install dependencies
+      # Step 3: Navigate to backend directory, create virtual environment, and install dependencies
       - name: Set up virtual environment and install dependencies
         working-directory: ./corpai-backend  # Set the working directory to corpai-backend
         run: |
           python -m venv venv
-          source venv/bin/activate
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install zappa
+          ./venv/bin/pip install --upgrade pip
+          ./venv/bin/pip install -r requirements.txt
+          ./venv/bin/pip install zappa
 
       # Step 4: Configure AWS credentials
       - name: Configure AWS credentials
@@ -46,12 +45,10 @@ jobs:
         env:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: |
-          source venv/bin/activate
-          zappa deploy dev || zappa update dev
+          ./venv/bin/zappa deploy dev || ./venv/bin/zappa update dev
 
       # Step 6: Post-deployment check
       - name: Check deployment status
         working-directory: ./corpai-backend
         run: |
-          source venv/bin/activate
-          zappa status dev
+          ./venv/bin/zappa status dev
