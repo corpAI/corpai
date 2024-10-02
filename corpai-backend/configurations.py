@@ -8,7 +8,7 @@ from boto3.dynamodb.conditions import Key
 configurations_bp = Blueprint('configurations', __name__)
 
 # Initialize DynamoDB resource
-dynamodb = boto3.resource('dynamodb', region_name=os.getenv('AWS_REGION'))
+dynamodb = boto3.resource('dynamodb', region_name=os.getenv('CORPAI_AWS_REGION'))
 
 # Table name where configurations will be stored
 table_name = 'Configurations'

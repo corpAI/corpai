@@ -6,9 +6,9 @@ from s3_helper import fetch_files_from_s3
 # Initialize Bedrock client with environment variables
 bedrock_client = boto3.client(
     'bedrock-runtime',  # Use the correct service name for Bedrock
-    aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
-    aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
-    region_name=os.getenv('AWS_REGION')
+    aws_access_key_id=os.getenv('CORPAI_AWS_ACCESS_KEY_ID'),
+    aws_secret_access_key=os.getenv('CORPAI_AWS_SECRET_ACCESS_KEY'),
+    region_name=os.getenv('CORPAI_AWS_REGION')
 )
 
 # Global variables to store S3 context and configuration
