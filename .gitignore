@@ -4,3 +4,9 @@
 /corpai-backend/.venv
 /corpai-backend/.venv
 corpai-backend/.env
+/corpai-backend/node_modules
+/corpai-backend/__pycache__
+corpai-backend/.env
+corpai-backend/.env
+/corpai-backend/__pycache__
+/corpai-backend/__pycache__
