@@ -4,3 +4,8 @@ declare module '*.svg' {
   export const ReactComponent: any;
   export default content;
 }
+
+interface Window {
+  setLoadingSpinner?: (loading: boolean) => void;
+}
+

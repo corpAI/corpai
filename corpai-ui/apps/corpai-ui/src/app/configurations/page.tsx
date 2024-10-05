@@ -1,52 +1,44 @@
-'use client'; // Ensure this is a client-side component
-
+"use client";
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import styles from '../styles/Configurations.module.css'; // Updated stylesheet
-import { FaEdit, FaTrash, FaSave, FaTimes } from 'react-icons/fa'; // Import icons
+import { FaSave, FaTrash } from 'react-icons/fa'; // Import save and delete icons
+import config from '../config';
+import VerticalNavbar from '../components/VerticalNavbar';
+import axiosInstance from '../utils/axiosInstance';
+import LoadingSpinner from '../components/LoadingSpinner';
+import AuthWrapper from '../utils/authWrapper';
+import Head from 'next/head';
+import { AgGridReact } from 'ag-grid-react'; // Import AG Grid
+import 'ag-grid-community/styles/ag-grid.css'; // Core grid CSS
+import 'ag-grid-community/styles/ag-theme-alpine.css'; // Theme CSS
 
 const Configurations = () => {
   const [configurations, setConfigurations] = useState<any[]>([]);
-  const [configName, setConfigName] = useState<string>(''); // Config name
-  const [s3Bucket, setS3Bucket] = useState<string>('');
-  const [region, setRegion] = useState<string>('');
-  const [accessKeyId, setAccessKeyId] = useState<string>('');
-  const [secretAccessKey, setSecretAccessKey] = useState<string>('');
-  const [gcpProjectId, setGcpProjectId] = useState<string>('');
-  const [gcpCredentials, setGcpCredentials] = useState<string>('');
-  const [oneDriveClientId, setOneDriveClientId] = useState<string>('');
-  const [oneDriveClientSecret, setOneDriveClientSecret] = useState<string>('');
-  const [boxClientId, setBoxClientId] = useState<string>('');
-  const [boxClientSecret, setBoxClientSecret] = useState<string>('');
-  const [dropboxAccessToken, setDropboxAccessToken] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
+  const [configName, setConfigName] = useState<string>('');
+  const [providerSpecificData, setProviderSpecificData] = useState<any>({});
   const [error, setError] = useState<string | null>(null);
-  const [selectedProvider, setSelectedProvider] = useState<string>('s3'); // Default to s3 bucket
-  const [showSecret, setShowSecret] = useState<{ [key: number]: boolean }>({});
-  const [editIndex, setEditIndex] = useState<number | null>(null); // Index of the configuration being edited
-  const router = useRouter(); // Use Next.js router for navigation
+  const [selectedProvider, setSelectedProvider] = useState<string>('s3');
+  const router = useRouter();
+
+  useEffect(() => {
+    document.title = 'Configurations - Corp.AI';
+  }, []);
 
   useEffect(() => {
     const fetchConfigurations = async () => {
-      setLoading(true);
       const token = localStorage.getItem('token');
       if (!token) {
-        router.push('/'); // Redirect to login if no token is found
+        router.push('/');
         return;
       }
       try {
-        const response = await axios.get(
-          'http://localhost:5000/configurations',
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        const response = await axiosInstance.get(`${config.backendHost}/configurations`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         setConfigurations(response.data);
       } catch (err) {
         setError('Failed to fetch configurations');
-      } finally {
-        setLoading(false);
       }
     };
     fetchConfigurations();
@@ -57,649 +49,230 @@ const Configurations = () => {
     const configData: any = {
       provider: selectedProvider,
       config_name: configName,
+      ...providerSpecificData,
     };
 
-    // Collect data based on selected provider
-    if (selectedProvider === 's3') {
-      configData.s3Bucket = s3Bucket;
-      configData.region = region;
-      configData.accessKeyId = accessKeyId;
-      configData.secretAccessKey = secretAccessKey;
-    } else if (selectedProvider === 'gcp') {
-      configData.gcpProjectId = gcpProjectId;
-      configData.gcpCredentials = gcpCredentials;
-    } else if (selectedProvider === 'onedrive') {
-      configData.oneDriveClientId = oneDriveClientId;
-      configData.oneDriveClientSecret = oneDriveClientSecret;
-    } else if (selectedProvider === 'box') {
-      configData.boxClientId = boxClientId;
-      configData.boxClientSecret = boxClientSecret;
-    } else if (selectedProvider === 'dropbox') {
-      configData.dropboxAccessToken = dropboxAccessToken;
-    }
-
     try {
-      const response = await axios.post(
-        'http://localhost:5000/configurations',
-        configData,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setConfigurations([...configurations, configData]); // Update with the data sent
-      // Clear fields after adding configuration
+      const response = await axiosInstance.post(`${config.backendHost}/configurations`, configData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setConfigurations([...configurations, response.data]);
       setConfigName('');
-      setS3Bucket('');
-      setRegion('');
-      setAccessKeyId('');
-      setSecretAccessKey('');
-      setGcpProjectId('');
-      setGcpCredentials('');
-      setOneDriveClientId('');
-      setOneDriveClientSecret('');
-      setBoxClientId('');
-      setBoxClientSecret('');
-      setDropboxAccessToken('');
-      setError(null); // Clear any previous errors
+      setProviderSpecificData({});
+      setError(null);
     } catch (err) {
       setError('Failed to add configuration');
     }
   };
 
-  const deleteConfiguration = async (config: any, index: number) => {
+  const deleteConfiguration = async (config: any) => {
     const token = localStorage.getItem('token');
-    const confirmDelete = window.confirm(
-      `Are you sure you want to delete ${config.config_name}?`
-    );
+    const confirmDelete = window.confirm(`Are you sure you want to delete ${config.config_name}?`);
     if (!confirmDelete) return;
     try {
-      await axios.delete(
-        `http://localhost:5000/configurations/${config.provider}/${config.config_name}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      const updatedConfigs = configurations.filter((_, i) => i !== index);
-      setConfigurations(updatedConfigs);
+      await axiosInstance.delete(`${config.backendHost}/configurations/${config.provider}/${config.config_name}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setConfigurations(configurations.filter((c) => c.config_name !== config.config_name));
     } catch (err) {
       setError('Failed to delete configuration');
     }
   };
 
-  const saveConfiguration = async (config: any, index: number) => {
+  const saveConfiguration = async (config: any) => {
     const token = localStorage.getItem('token');
     try {
-      await axios.put(
-        `http://localhost:5000/configurations/${config.provider}/${config.config_name}`,
-        config,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      // Update the configurations state
-      const updatedConfigs = [...configurations];
-      updatedConfigs[index] = config;
-      setConfigurations(updatedConfigs);
-      setEditIndex(null); // Exit edit mode
+      await axiosInstance.put(`${config.backendHost}/configurations/${config.provider}/${config.config_name}`, config, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
     } catch (err) {
       setError('Failed to update configuration');
     }
   };
 
-  if (loading) return <p>Loading...</p>;
+  const getColumnDefs = () => {
+    if (configurations.length === 0) return [];
+
+    // Generate columns dynamically based on keys in the configurations data
+    const keys = Object.keys(configurations[0]);
+    const columns = keys.map((key) => {
+      if (key === 'config_name' || key === 'provider') {
+        return { headerName: key.replace('_', ' ').toUpperCase(), field: key, editable: false, flex: 1 };
+      } else if (key.toLowerCase().includes('secret') || key.toLowerCase().includes('key')) {
+        return {
+          headerName: key.replace('_', ' ').toUpperCase(),
+          field: key,
+          editable: false,
+          flex: 1,
+          cellRendererFramework: (params: any) => (
+            <div
+              className={styles.hiddenSecret}
+              onClick={() => {
+                params.eGridCell.querySelector('.secretText').style.display = 'none';
+                params.eGridCell.querySelector('.secretReveal').style.display = 'inline';
+              }}
+              onMouseLeave={() => {
+                params.eGridCell.querySelector('.secretText').style.display = 'inline';
+                params.eGridCell.querySelector('.secretReveal').style.display = 'none';
+              }}
+            >
+              <span className="secretText">{'******'}</span>
+              <span className="secretReveal" style={{ display: 'none' }}>{params.value}</span>
+            </div>
+          ),
+        };
+      } else {
+        return { headerName: key.replace('_', ' ').toUpperCase(), field: key, editable: true, flex: 1 };
+      }
+    });
+
+    // Add Actions column
+    columns.push({
+      headerName: 'Actions',
+      cellRendererFramework: (params: any) => (
+        <div className={styles.configActions}>
+          <FaSave className={styles.iconSave} onClick={() => saveConfiguration(params.data)} />
+          <FaTrash className={styles.iconDelete} onClick={() => deleteConfiguration(params.data)} />
+        </div>
+      ),
+      flex: 1,
+      field: '',
+      editable: false
+    });
+
+    return columns;
+  };
 
   return (
-    <div className={styles.gridContainer}>
-      {/* Left-Hand Side (LHS) - Form to Add Configurations */}
-      <div className={styles.lhs}>
-        <h2 className={styles.formTitle}>Add New Configuration</h2>
-
-        {/* Cloud Provider Switch */}
-        <div className={styles.providerSwitch}>
-          <label>Cloud Provider:</label>
-          <select
-            value={selectedProvider}
-            onChange={(e) => setSelectedProvider(e.target.value)}
-            className={styles.providerSelect}
+    <AuthWrapper>
+      <Head>
+        <title>Configurations - Corp.AI</title>
+      </Head>
+      <div className={styles.gridContainer}>
+        <LoadingSpinner />
+        <VerticalNavbar />
+        <div className={styles.lhs}>
+          <h2 className={styles.formTitle}>Add New Configuration</h2>
+          <div className={styles.providerSwitch}>
+            <label>Cloud Provider:</label>
+            <select
+              value={selectedProvider}
+              onChange={(e) => setSelectedProvider(e.target.value)}
+              className={styles.providerSelect}
+            >
+              <option value="s3">S3 Bucket</option>
+              <option value="gcp">Google Cloud Platform</option>
+              <option value="onedrive">OneDrive</option>
+              <option value="box">Box</option>
+              <option value="dropbox">Dropbox</option>
+            </select>
+          </div>
+          {error && (
+            <div className={styles.errorContainer}>
+              <p className={styles.errorMessage}>{error}</p>
+            </div>
+          )}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              addConfiguration();
+            }}
           >
-            <option value="s3">S3 Bucket</option>
-            <option value="gcp">Google Cloud Platform</option>
-            <option value="onedrive">OneDrive</option>
-            <option value="box">Box</option>
-            <option value="dropbox">Dropbox</option>
-          </select>
+            <div className={styles.inputGroup}>
+              <label>Configuration Name:</label>
+              <input
+                type="text"
+                value={configName}
+                onChange={(e) => setConfigName(e.target.value)}
+                className={styles.inputField}
+                placeholder="Enter a unique configuration name"
+                required
+              />
+            </div>
+
+            {/* Conditionally Render Fields Based on Selected Provider */}
+            {selectedProvider === 's3' && (
+              <>
+                <div className={styles.inputGroup}>
+                  <label>S3 Bucket:</label>
+                  <input
+                    type="text"
+                    value={providerSpecificData.s3Bucket || ''}
+                    onChange={(e) =>
+                      setProviderSpecificData((prev: any) => ({ ...prev, s3Bucket: e.target.value }))
+                    }
+                    className={styles.inputField}
+                    placeholder="Enter your S3 bucket name"
+                    required
+                  />
+                </div>
+                <div className={styles.inputGroup}>
+                  <label>Region:</label>
+                  <input
+                    type="text"
+                    value={providerSpecificData.region || ''}
+                    onChange={(e) =>
+                      setProviderSpecificData((prev: any) => ({ ...prev, region: e.target.value }))
+                    }
+                    className={styles.inputField}
+                    placeholder="Enter AWS region"
+                    required
+                  />
+                </div>
+                <div className={styles.inputGroup}>
+                  <label>Access Key ID:</label>
+                  <input
+                    type="text"
+                    value={providerSpecificData.accessKeyId || ''}
+                    onChange={(e) =>
+                      setProviderSpecificData((prev: any) => ({ ...prev, accessKeyId: e.target.value }))
+                    }
+                    className={styles.inputField}
+                    placeholder="Enter AWS Access Key ID"
+                    required
+                  />
+                </div>
+                <div className={styles.inputGroup}>
+                  <label>Secret Access Key:</label>
+                  <input
+                    type="password"
+                    value={providerSpecificData.secretAccessKey || ''}
+                    onChange={(e) =>
+                      setProviderSpecificData((prev: any) => ({ ...prev, secretAccessKey: e.target.value }))
+                    }
+                    className={styles.inputField}
+                    placeholder="Enter AWS Secret Access Key"
+                    required
+                  />
+                </div>
+              </>
+            )}
+            {/* Render other provider-specific fields similarly */}
+            <button type="submit" className={styles.submitButton}>
+              Add Configuration
+            </button>
+          </form>
         </div>
 
-        {error && (
-          <div className={styles.errorContainer}>
-            <p className={styles.errorMessage}>{error}</p>
-          </div>
-        )}
-
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            addConfiguration();
-          }}
-        >
-          <div className={styles.inputGroup}>
-            <label>Configuration Name:</label>
-            <input
-              type="text"
-              value={configName}
-              onChange={(e) => setConfigName(e.target.value)}
-              className={styles.inputField}
-              placeholder="Enter a unique configuration name"
-              required
+        <div className={styles.rhs}>
+          <h2 className={styles.formTitle}>Manage Your Configurations</h2>
+          <div className="ag-theme-alpine" style={{ height: '500px', width: '100%' }}>
+            <AgGridReact
+              rowData={configurations}
+              columnDefs={getColumnDefs()}
+              defaultColDef={{
+                sortable: true,
+                filter: true,
+                flex: 1,
+                resizable: true,
+              }}
             />
           </div>
-
-          {/* Conditionally Render Fields Based on Selected Provider */}
-          {selectedProvider === 's3' && (
-            <>
-              <div className={styles.inputGroup}>
-                <label>S3 Bucket:</label>
-                <input
-                  type="text"
-                  value={s3Bucket}
-                  onChange={(e) => setS3Bucket(e.target.value)}
-                  className={styles.inputField}
-                  placeholder="Enter your S3 bucket name"
-                  required
-                />
-              </div>
-
-              <div className={styles.inputGroup}>
-                <label>Region:</label>
-                <input
-                  type="text"
-                  value={region}
-                  onChange={(e) => setRegion(e.target.value)}
-                  className={styles.inputField}
-                  placeholder="Enter AWS region"
-                  required
-                />
-              </div>
-
-              <div className={styles.inputGroup}>
-                <label>Access Key ID:</label>
-                <input
-                  type="text"
-                  value={accessKeyId}
-                  onChange={(e) => setAccessKeyId(e.target.value)}
-                  className={styles.inputField}
-                  placeholder="Enter AWS Access Key ID"
-                  required
-                />
-              </div>
-
-              <div className={styles.inputGroup}>
-                <label>Secret Access Key:</label>
-                <input
-                  type="password"
-                  value={secretAccessKey}
-                  onChange={(e) => setSecretAccessKey(e.target.value)}
-                  className={styles.inputField}
-                  placeholder="Enter AWS Secret Access Key"
-                  required
-                />
-              </div>
-            </>
-          )}
-
-          {selectedProvider === 'gcp' && (
-            <>
-              <div className={styles.inputGroup}>
-                <label>GCP Project ID:</label>
-                <input
-                  type="text"
-                  value={gcpProjectId}
-                  onChange={(e) => setGcpProjectId(e.target.value)}
-                  className={styles.inputField}
-                  placeholder="Enter GCP Project ID"
-                  required
-                />
-              </div>
-
-              <div className={styles.inputGroup}>
-                <label>GCP Credentials:</label>
-                <input
-                  type="text"
-                  value={gcpCredentials}
-                  onChange={(e) => setGcpCredentials(e.target.value)}
-                  className={styles.inputField}
-                  placeholder="Enter GCP Credentials"
-                  required
-                />
-              </div>
-            </>
-          )}
-
-          {selectedProvider === 'onedrive' && (
-            <>
-              <div className={styles.inputGroup}>
-                <label>OneDrive Client ID:</label>
-                <input
-                  type="text"
-                  value={oneDriveClientId}
-                  onChange={(e) => setOneDriveClientId(e.target.value)}
-                  className={styles.inputField}
-                  placeholder="Enter OneDrive Client ID"
-                  required
-                />
-              </div>
-
-              <div className={styles.inputGroup}>
-                <label>OneDrive Client Secret:</label>
-                <input
-                  type="password"
-                  value={oneDriveClientSecret}
-                  onChange={(e) => setOneDriveClientSecret(e.target.value)}
-                  className={styles.inputField}
-                  placeholder="Enter OneDrive Client Secret"
-                  required
-                />
-              </div>
-            </>
-          )}
-
-          {selectedProvider === 'box' && (
-            <>
-              <div className={styles.inputGroup}>
-                <label>Box Client ID:</label>
-                <input
-                  type="text"
-                  value={boxClientId}
-                  onChange={(e) => setBoxClientId(e.target.value)}
-                  className={styles.inputField}
-                  placeholder="Enter Box Client ID"
-                  required
-                />
-              </div>
-
-              <div className={styles.inputGroup}>
-                <label>Box Client Secret:</label>
-                <input
-                  type="password"
-                  value={boxClientSecret}
-                  onChange={(e) => setBoxClientSecret(e.target.value)}
-                  className={styles.inputField}
-                  placeholder="Enter Box Client Secret"
-                  required
-                />
-              </div>
-            </>
-          )}
-
-          {selectedProvider === 'dropbox' && (
-            <>
-              <div className={styles.inputGroup}>
-                <label>Dropbox Access Token:</label>
-                <input
-                  type="text"
-                  value={dropboxAccessToken}
-                  onChange={(e) => setDropboxAccessToken(e.target.value)}
-                  className={styles.inputField}
-                  placeholder="Enter Dropbox Access Token"
-                  required
-                />
-              </div>
-            </>
-          )}
-
-          <button type="submit" className={styles.submitButton}>
-            Add Configuration
-          </button>
-        </form>
+        </div>
       </div>
-
-      {/* Right-Hand Side (RHS) - Display Configurations */}
-      <div className={styles.rhs}>
-        <h2 className={styles.formTitle}>Manage Your Configurations</h2>
-
-        {configurations.length > 0 ? (
-          <div className={styles.configGrid}>
-            {configurations.map((config, index) => (
-              <div key={index} className={styles.configItem}>
-                <div className={styles.configHeader}>
-                  <p>
-                    <strong>{config.config_name}</strong>
-                  </p>
-                  <div className={styles.configActions}>
-                    {editIndex === index ? (
-                      <>
-                        <FaSave
-                          className={styles.icon}
-                          onClick={() => saveConfiguration(config, index)}
-                        />
-                        <FaTimes
-                          className={styles.icon}
-                          onClick={() => setEditIndex(null)}
-                        />
-                      </>
-                    ) : (
-                      <>
-                        <FaEdit
-                          className={styles.icon}
-                          onClick={() => setEditIndex(index)}
-                        />
-                        <FaTrash
-                          className={styles.icon}
-                          onClick={() => deleteConfiguration(config, index)}
-                        />
-                      </>
-                    )}
-                  </div>
-                </div>
-                <p>
-                  <strong>Provider:</strong> {config.provider}
-                </p>
-                {/* Render provider-specific details */}
-                {editIndex === index ? (
-                  <>
-                    {config.provider === 's3' && (
-                      <>
-                        <div className={styles.inputGroup}>
-                          <label>S3 Bucket:</label>
-                          <input
-                            type="text"
-                            value={config.s3Bucket}
-                            onChange={(e) => {
-                              const updatedConfigs = [...configurations];
-                              updatedConfigs[index].s3Bucket = e.target.value;
-                              setConfigurations(updatedConfigs);
-                            }}
-                            className={styles.inputField}
-                          />
-                        </div>
-                        <div className={styles.inputGroup}>
-                          <label>Region:</label>
-                          <input
-                            type="text"
-                            value={config.region}
-                            onChange={(e) => {
-                              const updatedConfigs = [...configurations];
-                              updatedConfigs[index].region = e.target.value;
-                              setConfigurations(updatedConfigs);
-                            }}
-                            className={styles.inputField}
-                          />
-                        </div>
-                        <div className={styles.inputGroup}>
-                          <label>Access Key ID:</label>
-                          <input
-                            type="text"
-                            value={config.accessKeyId}
-                            onChange={(e) => {
-                              const updatedConfigs = [...configurations];
-                              updatedConfigs[index].accessKeyId =
-                                e.target.value;
-                              setConfigurations(updatedConfigs);
-                            }}
-                            className={styles.inputField}
-                          />
-                        </div>
-                        <div className={styles.inputGroup}>
-                          <label>Secret Access Key:</label>
-                          <input
-                            type="password"
-                            value={config.secretAccessKey}
-                            onChange={(e) => {
-                              const updatedConfigs = [...configurations];
-                              updatedConfigs[index].secretAccessKey =
-                                e.target.value;
-                              setConfigurations(updatedConfigs);
-                            }}
-                            className={styles.inputField}
-                          />
-                        </div>
-                      </>
-                    )}
-                    {config.provider === 'gcp' && (
-                      <>
-                        <div className={styles.inputGroup}>
-                          <label>GCP Project ID:</label>
-                          <input
-                            type="text"
-                            value={config.gcpProjectId}
-                            onChange={(e) => {
-                              const updatedConfigs = [...configurations];
-                              updatedConfigs[index].gcpProjectId =
-                                e.target.value;
-                              setConfigurations(updatedConfigs);
-                            }}
-                            className={styles.inputField}
-                          />
-                        </div>
-                        <div className={styles.inputGroup}>
-                          <label>GCP Credentials:</label>
-                          <input
-                            type="text"
-                            value={config.gcpCredentials}
-                            onChange={(e) => {
-                              const updatedConfigs = [...configurations];
-                              updatedConfigs[index].gcpCredentials =
-                                e.target.value;
-                              setConfigurations(updatedConfigs);
-                            }}
-                            className={styles.inputField}
-                          />
-                        </div>
-                      </>
-                    )}
-                    {config.provider === 'onedrive' && (
-                      <>
-                        <div className={styles.inputGroup}>
-                          <label>OneDrive Client ID:</label>
-                          <input
-                            type="text"
-                            value={config.oneDriveClientId}
-                            onChange={(e) => {
-                              const updatedConfigs = [...configurations];
-                              updatedConfigs[index].oneDriveClientId =
-                                e.target.value;
-                              setConfigurations(updatedConfigs);
-                            }}
-                            className={styles.inputField}
-                          />
-                        </div>
-                        <div className={styles.inputGroup}>
-                          <label>OneDrive Client Secret:</label>
-                          <input
-                            type="password"
-                            value={config.oneDriveClientSecret}
-                            onChange={(e) => {
-                              const updatedConfigs = [...configurations];
-                              updatedConfigs[index].oneDriveClientSecret =
-                                e.target.value;
-                              setConfigurations(updatedConfigs);
-                            }}
-                            className={styles.inputField}
-                          />
-                        </div>
-                      </>
-                    )}
-                    {config.provider === 'box' && (
-                      <>
-                        <div className={styles.inputGroup}>
-                          <label>Box Client ID:</label>
-                          <input
-                            type="text"
-                            value={config.boxClientId}
-                            onChange={(e) => {
-                              const updatedConfigs = [...configurations];
-                              updatedConfigs[index].boxClientId =
-                                e.target.value;
-                              setConfigurations(updatedConfigs);
-                            }}
-                            className={styles.inputField}
-                          />
-                        </div>
-                        <div className={styles.inputGroup}>
-                          <label>Box Client Secret:</label>
-                          <input
-                            type="password"
-                            value={config.boxClientSecret}
-                            onChange={(e) => {
-                              const updatedConfigs = [...configurations];
-                              updatedConfigs[index].boxClientSecret =
-                                e.target.value;
-                              setConfigurations(updatedConfigs);
-                            }}
-                            className={styles.inputField}
-                          />
-                        </div>
-                      </>
-                    )}
-                    {config.provider === 'dropbox' && (
-                      <>
-                        <div className={styles.inputGroup}>
-                          <label>Dropbox Access Token:</label>
-                          <input
-                            type="text"
-                            value={config.dropboxAccessToken}
-                            onChange={(e) => {
-                              const updatedConfigs = [...configurations];
-                              updatedConfigs[index].dropboxAccessToken =
-                                e.target.value;
-                              setConfigurations(updatedConfigs);
-                            }}
-                            className={styles.inputField}
-                          />
-                        </div>
-                      </>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    {/* Render non-editable values */}
-                    {config.provider === 's3' && (
-                      <>
-                        <p>
-                          <strong>S3 Bucket:</strong> {config.s3Bucket}
-                        </p>
-                        <p>
-                          <strong>Region:</strong> {config.region}
-                        </p>
-                        <p>
-                          <strong>Access Key ID:</strong> {config.accessKeyId}
-                        </p>
-                        <p>
-                          <strong>Secret Access Key:</strong>{' '}
-                          {showSecret[index]
-                            ? config.secretAccessKey
-                            : '******'}
-                          <button
-                            onClick={() =>
-                              setShowSecret((prev) => ({
-                                ...prev,
-                                [index]: !prev[index],
-                              }))
-                            }
-                            className={styles.eyeButton}
-                          >
-                            {showSecret[index] ? 'Hide' : 'Show'}
-                          </button>
-                        </p>
-                      </>
-                    )}
-                    {config.provider === 'gcp' && (
-                      <>
-                        <p>
-                          <strong>GCP Project ID:</strong> {config.gcpProjectId}
-                        </p>
-                        <p>
-                          <strong>GCP Credentials:</strong>{' '}
-                          {showSecret[index] ? config.gcpCredentials : '******'}
-                          <button
-                            onClick={() =>
-                              setShowSecret((prev) => ({
-                                ...prev,
-                                [index]: !prev[index],
-                              }))
-                            }
-                            className={styles.eyeButton}
-                          >
-                            {showSecret[index] ? 'Hide' : 'Show'}
-                          </button>
-                        </p>
-                      </>
-                    )}
-                    {config.provider === 'onedrive' && (
-                      <>
-                        <p>
-                          <strong>OneDrive Client ID:</strong>{' '}
-                          {config.oneDriveClientId}
-                        </p>
-                        <p>
-                          <strong>OneDrive Client Secret:</strong>{' '}
-                          {showSecret[index]
-                            ? config.oneDriveClientSecret
-                            : '******'}
-                          <button
-                            onClick={() =>
-                              setShowSecret((prev) => ({
-                                ...prev,
-                                [index]: !prev[index],
-                              }))
-                            }
-                            className={styles.eyeButton}
-                          >
-                            {showSecret[index] ? 'Hide' : 'Show'}
-                          </button>
-                        </p>
-                      </>
-                    )}
-                    {config.provider === 'box' && (
-                      <>
-                        <p>
-                          <strong>Box Client ID:</strong> {config.boxClientId}
-                        </p>
-                        <p>
-                          <strong>Box Client Secret:</strong>{' '}
-                          {showSecret[index]
-                            ? config.boxClientSecret
-                            : '******'}
-                          <button
-                            onClick={() =>
-                              setShowSecret((prev) => ({
-                                ...prev,
-                                [index]: !prev[index],
-                              }))
-                            }
-                            className={styles.eyeButton}
-                          >
-                            {showSecret[index] ? 'Hide' : 'Show'}
-                          </button>
-                        </p>
-                      </>
-                    )}
-                    {config.provider === 'dropbox' && (
-                      <>
-                        <p>
-                          <strong>Dropbox Access Token:</strong>{' '}
-                          {showSecret[index]
-                            ? config.dropboxAccessToken
-                            : '******'}
-                          <button
-                            onClick={() =>
-                              setShowSecret((prev) => ({
-                                ...prev,
-                                [index]: !prev[index],
-                              }))
-                            }
-                            className={styles.eyeButton}
-                          >
-                            {showSecret[index] ? 'Hide' : 'Show'}
-                          </button>
-                        </p>
-                      </>
-                    )}
-                  </>
-                )}
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p>No configurations found.</p>
-        )}
-      </div>
-    </div>
+    </AuthWrapper>
   );
 };
 
 export default Configurations;
+

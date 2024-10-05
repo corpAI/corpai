@@ -1,8 +1,30 @@
-
 /* Container for the full-page layout */
 .container {
   display: flex;
   height: 100vh;
+  position: relative;
+  background-color: #f4f6f8; /* Light background for better contrast */
+}
+
+/* Spinner Styling */
+.spinner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 50px;
+  height: 50px;
+  margin: -25px 0 0 -25px;
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-top-color: #1e3a8a;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  z-index: 9999; /* Make sure the spinner is on top */
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Left pane styling */
@@ -12,7 +34,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding-left: 60px;
+  padding: 0 60px;
   color: white;
 }
 
@@ -20,15 +42,19 @@
   font-size: 42px;
   font-weight: bold;
   font-style: italic;
+  margin-bottom: 20px;
 }
 
 .welcomeText h1 {
   font-size: 48px;
   margin-bottom: 20px;
+  line-height: 1.2;
 }
 
 .welcomeText p {
   font-size: 24px;
+  line-height: 1.5;
+  max-width: 500px;
 }
 
 /* Right pane styling */
@@ -37,32 +63,34 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  padding: 40px;
 }
 
 .formWrapper {
   background-color: white;
   padding: 40px;
   border-radius: 20px;
-  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
-  max-width: 400px;
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.15);
+  max-width: 450px;
   width: 100%;
   text-align: center;
 }
 
 .formTitle {
-  font-size: 22px;
-  font-weight: 600;
+  font-size: 26px;
+  font-weight: 700;
+  color: #1e3a8a;
   margin-bottom: 30px;
 }
 
+/* Input group styling */
 .inputGroup {
-  margin-bottom: 20px;
+  margin-bottom: 25px;
   text-align: left;
 }
 
 .inputGroup label {
-  font-size: 14px;
+  font-size: 15px;
   color: #333;
   display: block;
   margin-bottom: 8px;
@@ -73,36 +101,53 @@
   padding: 12px;
   border: 1px solid #d0d0d0;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 15px;
   color: #333;
+  transition: border-color 0.3s ease;
 }
 
+.inputField:focus {
+  border-color: #1e3a8a;
+  outline: none;
+}
+
+/* Forgot password link */
 .forgotPassword {
   display: block;
   text-align: right;
   color: #1e3a8a;
   font-size: 14px;
   margin-top: 10px;
+  text-decoration: none;
+}
+
+.forgotPassword:hover {
+  text-decoration: underline;
 }
 
 /* Password wrapper for eye icon */
 .passwordWrapper {
-  display: flex;
-  align-items: center;
   position: relative;
 }
 
 .showPasswordIcon {
   position: absolute;
-  right: 10px;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
   cursor: pointer;
-  font-size: 16px;
+  font-size: 18px;
   color: #888;
+  transition: color 0.3s ease;
+}
+
+.showPasswordIcon:hover {
+  color: #1e3a8a;
 }
 
 /* Error message styling */
 .errorMessage {
-  color: red;
+  color: #d32f2f;
   margin-bottom: 20px;
   font-size: 14px;
 }
@@ -110,46 +155,58 @@
 /* Login button styling */
 .loginButton {
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   background-color: #1e3a8a;
   color: white;
   border: none;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 600;
   cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
 }
 
 .loginButton:hover {
   background-color: #0f2566;
 }
 
-/* Google login button */
+.loginButton:active {
+  transform: scale(0.98);
+}
+
+/* Google login button styling */
 .googleButton {
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 12px;
-  width: 100%;
+  width: 100%; /* Ensure button takes full width of the container */
+  max-width: none; /* Allow the button to expand beyond default max width */
   background-color: #f1f3f4;
   color: #444;
-  border: none;
+  border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 16px;
   cursor: pointer;
   margin-top: 20px;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.googleButton:hover {
+  background-color: #e1e3e5;
+  border-color: #ccc;
 }
 
 .googleIcon {
   margin-right: 10px;
-  width: 18px;
+  width: 20px;
 }
 
 /* Sign up text */
 .signupText {
-  font-size: 14px;
-  color: #aaa;
-  margin-top: 20px;
+  font-size: 15px;
+  color: #666;
+  margin-top: 25px;
 }
 
 .signupText a {
@@ -161,3 +218,19 @@
 .signupText a:hover {
   text-decoration: underline;
 }
+
+.showPasswordIcon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 18px;
+  color: #888;
+  transition: color 0.3s ease;
+}
+
+.showPasswordIcon:hover {
+  color: #1e3a8a;
+}
+

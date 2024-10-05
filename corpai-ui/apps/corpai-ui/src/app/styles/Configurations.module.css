@@ -1,101 +1,140 @@
 .gridContainer {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 20px;
-    padding: 20px;
-  }
-  
-  .lhs {
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .rhs {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .formTitle {
-    margin-bottom: 20px;
-    font-size: 1.5rem;
-  }
-  
-  .inputGroup {
-    margin-bottom: 15px;
-  }
-  
-  .inputField {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-  }
-  
-  .submitButton {
-    padding: 10px 20px;
-    background-color: #0070f3;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .submitButton:hover {
-    background-color: #005bb5;
-  }
-  
-  .configGrid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-  }
-  
-  .configItem {
-    background-color: #f9f9f9;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
-  
-  .eyeButton {
-    background: none;
-    border: none;
-    color: #0070f3;
-    cursor: pointer;
-  }
-  
-  .eyeButton:hover {
-    text-decoration: underline;
-  }
-  
-  .providerSwitch {
-    margin-bottom: 20px;
-  }
-  
-  .providerSelect {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-  }
-  
-  .errorContainer {
-    background-color: #ffe6e6;
-    border: 1px solid #ff4d4d;
-    padding: 10px;
-    margin-bottom: 15px;
-    border-radius: 5px;
-  }
-  
-  .errorMessage {
-    color: #cc0000;
-    font-weight: bold;
-    text-align: center;
-  }
-  
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 20px;
+  padding: 20px;
+  margin-left: 270px;
+  box-sizing: border-box;
+  height: calc(100vh - 40px); /* Ensure total height minus padding */
+  align-items: stretch; /* Make both LHS and RHS stretch to fill the height */
+}
+
+.lhs {
+  background-color: #f4f6f8;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  height: calc(100% - 40px);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.rhs {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  height: calc(100% - 40px);
+  display: flex;
+  flex-direction: column;
+}
+
+.configActions {
+  display: flex;
+  gap: 10px;
+}
+
+.iconSave {
+  color: #28a745; /* Green for Save */
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.iconSave:hover {
+  color: #218838; /* Darker green on hover */
+}
+
+.iconCancel {
+  color: #dc3545; /* Red for Cancel/Delete */
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.iconCancel:hover {
+  color: #c82333; /* Darker red on hover */
+}
+
+.formTitle {
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  color: #1e3a8a;
+}
+
+.inputGroup {
+  margin-bottom: 15px;
+}
+
+.inputField {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.submitButton {
+  padding: 12px 20px;
+  background-color: #1e3a8a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+
+.submitButton:hover {
+  background-color: #0f2566;
+}
+
+.providerSwitch {
+  margin-bottom: 20px;
+}
+
+.providerSelect {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.errorContainer {
+  background-color: #ffe6e6;
+  border: 1px solid #d32f2f;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+}
+
+.errorMessage {
+  color: #d32f2f;
+  font-weight: bold;
+  text-align: center;
+}
+
+.hiddenSecret {
+  position: relative;
+  cursor: pointer;
+}
+
+.hiddenSecret .secretText {
+  display: inline;
+}
+
+.hiddenSecret .secretReveal {
+  display: none;
+}
+
+.hiddenSecret:hover .secretText {
+  display: none;
+}
+
+.hiddenSecret:hover .secretReveal {
+  display: inline;
+}

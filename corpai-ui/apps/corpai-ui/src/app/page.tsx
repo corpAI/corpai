@@ -1,52 +1,71 @@
 /* eslint-disable @next/next/no-img-element */
 "use client"; // Ensure client-side rendering for this component
-import { useState } from 'react';
-import axios from 'axios';
+import { useEffect, useState } from 'react';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import { useRouter } from 'next/navigation'; // Import Next.js router
-import styles from './styles/Login.module.css';
-const GOOGLE_CLIENT_ID='273493204931-tqki4k6970n561cvmphnagj2cq0kkcov.apps.googleusercontent.com'
+import styles from './styles/Login.module.css'; // Import CSS module for styling
+import config from './config';
+import axiosInstance from './utils/axiosInstance';
+import LoadingSpinner from './components/LoadingSpinner';
+import Head from 'next/head';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+
+const GOOGLE_CLIENT_ID = '273493204931-tqki4k6970n561cvmphnagj2cq0kkcov.apps.googleusercontent.com';
 
 export default function Login() {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter(); // Initialize the useRouter hook
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true); // Show the spinner when the API call starts
     try {
-      const response = await axios.post('http://localhost:5000/auth/login', {
+      const response = await axiosInstance.post(`${config.backendHost}/auth/login`, {
         username,
         password,
       });
-      console.log('Login successful:', response.data.token);
       const token = response.data.token;
       localStorage.setItem('token', token);
       router.push('/chat'); // Use Next.js router for navigation
     } catch (err) {
       setError('Invalid credentials');
+    } finally {
+      setLoading(false); // Hide the spinner when the API call is done
     }
   };
 
+  useEffect(() => {
+    document.title = 'Corp.AI';
+  }, []);
+
   const responseGoogle = async (credentialResponse: any) => {
+    setLoading(true); // Show the spinner when the API call starts
     try {
-      const result = await axios.post('http://localhost:5000/auth/google-login', {
+      const result = await axiosInstance.post(`${config.backendHost}/auth/google-login`, {
         token: credentialResponse.credential,
       });
       const token = result.data.token;
       localStorage.setItem('token', token);
       router.push('/chat'); // Use Next.js router for navigation
-      console.log('Google Login successful:', result.data.token);
     } catch (err) {
       setError('Google login failed');
+    } finally {
+      setLoading(false); // Hide the spinner when the API call is done
     }
   };
 
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <Head>
+        <title>Corp.AI</title>
+      </Head>
       <div className={styles.container}>
+        <LoadingSpinner />
         <div className={styles.leftPane}>
           <div className={styles.logo}>CORP.AI</div>
           <div className={styles.welcomeText}>
@@ -83,7 +102,7 @@ export default function Login() {
                     className={styles.showPasswordIcon}
                     onClick={() => setShowPassword(!showPassword)}
                   >
-                    {showPassword ? "🙈" : "👁️"}
+                    <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
                   </span>
                 </div>
                 <a href="/forgot-password" className={styles.forgotPassword}>Forgot?</a>
@@ -91,27 +110,15 @@ export default function Login() {
 
               {error && <p className={styles.errorMessage}>{error}</p>}
 
-              <button type="submit" className={styles.loginButton}>Login now</button>
+              <button type="submit" className={styles.loginButton} disabled={loading}>
+                {loading ? 'Loading...' : 'Login now'}
+              </button>
             </form>
-    <br/>
+            <br />
             <GoogleLogin
               onSuccess={responseGoogle}
               onError={() => setError('Google login failed')}
-              render={(renderProps) => (
-                <button
-                  onClick={renderProps.onClick}
-                  className={styles.googleButton}
-                >
-                  <img
-                    src="https://developers.google.com/identity/images/g-logo.png"
-                    alt="Google logo"
-                    className={styles.googleIcon}
-                  />
-                  Continue with Google
-                </button>
-              )}
             />
-
           </div>
         </div>
       </div>

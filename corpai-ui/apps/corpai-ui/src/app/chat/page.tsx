@@ -1,9 +1,21 @@
-"use client";
+'use client';
+import React, { useState, useEffect } from 'react';
+import axiosInstance from '../utils/axiosInstance';
+import VerticalNavbar from '../components/VerticalNavbar';
+import styles from '../styles/chat.module.css';
+import config from '../config';
+import LoadingSpinner from '../components/LoadingSpinner';
+import AuthWrapper from '../utils/authWrapper';
+import Head from 'next/head';
 
-import React, { useState } from 'react';
-import axios from 'axios';
-import VerticalNavbar from '../components/VerticalNavbar'; // Import the Navbar component
-import styles from '../styles/chat.module.css'; // Import the external CSS
+interface Configuration {
+  config_name: string;
+  provider: string;
+  s3Bucket?: string;
+  region?: string;
+  accessKeyId?: string;
+  secretAccessKey?: string;
+}
 
 interface Message {
   user: string;
@@ -11,30 +23,66 @@ interface Message {
 }
 
 const ChatPage: React.FC = () => {
+  const [configurations, setConfigurations] = useState<Configuration[]>([]);
+  const [selectedConfig, setSelectedConfig] = useState<string | null>(null);
   const [inputText, setInputText] = useState<string>('');
-  const [bucketName, setBucketName] = useState<string>('');
-  const [fileKeys, setFileKeys] = useState<string>('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    document.title = 'Chat - Corp.AI';
+  }, []);
+
+  useEffect(() => {
+    const fetchConfigurations = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          return;
+        }
+
+        const response = await axiosInstance.get(
+          config.backendHost + '/configurations',
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setConfigurations(response.data);
+      } catch (err) {
+        setError('Failed to fetch configurations.');
+      }
+    };
+
+    fetchConfigurations();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
-    if (!inputText || !bucketName) {
+    if (!inputText || !selectedConfig) {
       setError('Please fill in all required fields!');
       return;
     }
 
-    // If fileKeys is empty, set it to null or an empty array to indicate loading all files
-    const fileKeysArray = fileKeys ? fileKeys.split(',').map((key) => key.trim()) : null;
+    const selectedConfiguration = configurations.find(
+      (config) => config.config_name === selectedConfig
+    );
+
+    if (!selectedConfiguration) {
+      setError('Invalid configuration selected.');
+      return;
+    }
 
     try {
-      const response = await axios.post('http://localhost:5000/bedrock/query_with_multiple_files', {
-        input_text: inputText,
-        bucket_name: bucketName,
-        file_keys: fileKeysArray,
-      });
+      const response = await axiosInstance.post(
+        config.backendHost + '/bedrock/query_with_multiple_files',
+        {
+          input_text: inputText,
+          bucket_name: selectedConfiguration.s3Bucket,
+          file_keys: null,
+        }
+      );
 
       setMessages((prevMessages) => [
         ...prevMessages,
@@ -49,53 +97,59 @@ const ChatPage: React.FC = () => {
   };
 
   return (
-    <div className={styles['chat-page']}>
-      <VerticalNavbar />
-      <div className={styles['chat-container']}>
-        <h2>Bedrock Chat Interface</h2>
-        <div className={styles['chat-window']}>
-          <div className={styles['messages']}>
-            {messages.map((msg, index) => (
-              <div key={index} className={styles['message']}>
-                <div className={styles['user-message']}>
-                  <strong>You:</strong> {msg.user}
+    <AuthWrapper>
+      <Head>
+        <title>Chat - Corp.AI</title>
+      </Head>
+      <div className={styles['chat-page']}>
+        <LoadingSpinner />
+        <VerticalNavbar />
+        <div className={styles['chat-container']}>
+          <div className={styles['chat-window']}>
+            <div className={styles['messages']}>
+              {messages.map((msg, index) => (
+                <div key={index} className={styles['message']}>
+                  <div className={styles['user-message']}>
+                    <strong>You:</strong> {msg.user}
+                  </div>
+                  <div className={styles['bot-message']}>
+                    <strong>Bot:</strong> {msg.bot}
+                  </div>
                 </div>
-                <div className={styles['bot-message']}>
-                  <strong>Bot:</strong> {msg.bot}
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
+            <form onSubmit={handleSubmit} className={styles['chat-form']}>
+              <select
+                value={selectedConfig || ''}
+                onChange={(e) => setSelectedConfig(e.target.value)}
+                className={styles['input-select']}
+                required
+              >
+                <option value="" disabled>
+                  Select Configuration
+                </option>
+                {configurations.map((config, index) => (
+                  <option key={index} value={config.config_name}>
+                    {config.config_name} ({config.provider})
+                  </option>
+                ))}
+              </select>
+              <textarea
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                placeholder="Type your query..."
+                className={styles['input-textarea']}
+                required
+              />
+              <button type="submit" className={styles['submit-button']}>
+                Send
+              </button>
+            </form>
+            {error && <p className={styles['error-message']}>{error}</p>}
           </div>
-          <form onSubmit={handleSubmit} className={styles['chat-form']}>
-            <input
-              type="text"
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              placeholder="Type your query..."
-              className={styles['input-text']}
-            />
-            <input
-              type="text"
-              value={bucketName}
-              onChange={(e) => setBucketName(e.target.value)}
-              placeholder="Enter S3 bucket name..."
-              className={styles['input-text']}
-            />
-            <input
-              type="text"
-              value={fileKeys}
-              onChange={(e) => setFileKeys(e.target.value)}
-              placeholder="Enter file keys (comma-separated, optional)..."
-              className={styles['input-text']}
-            />
-            <button type="submit" className={styles['submit-button']}>
-              Send
-            </button>
-          </form>
-          {error && <p className={styles['error-message']}>{error}</p>}
         </div>
       </div>
-    </div>
+    </AuthWrapper>
   );
 };
 
