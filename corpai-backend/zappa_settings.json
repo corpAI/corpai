@@ -1,6 +1,7 @@
 {
     "dev": {
       "app_function": "app.app",
+      "cors": true,
       "aws_region": "us-west-2",
       "exclude": [
         "boto3",
