@@ -22,4 +22,4 @@ app.register_blueprint(configurations_bp)
 app.register_blueprint(bedrock_bp, url_prefix='/bedrock')
 
 if __name__ == '__main__':
-    app.run()  # For Zappa, debug=False and production mode is default test
+    app.run()  # For Zappa, debug=False and production mode is default test2
