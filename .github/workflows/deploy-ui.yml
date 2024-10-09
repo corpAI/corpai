@@ -3,9 +3,10 @@ name: Deploy to S3
 on:
   push:
     branches:
-      - main
+      - main  # Trigger on push to main branch
     paths:
       - 'corpai-ui/**'
+  workflow_dispatch:  # Allow manual trigger
 
 jobs:
   build-and-deploy:
@@ -13,7 +14,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: corpai/corpai-ui  # Set the working directory to the monorepo's root
+        working-directory: corpai/corpai-ui  # Set the working directory to the Nx monorepo root
 
     steps:
       # Step 1: Checkout the repository
@@ -24,27 +25,27 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18.x'  # Change to match your project's Node.js version
+          node-version: '18.x'  # Use the Node.js version compatible with your project
 
       # Step 3: Cache Node.js dependencies to speed up builds
       - name: Cache Node.js dependencies
         uses: actions/cache@v3
         with:
           path: |
-            node_modules
-            apps/**/node_modules
-            libs/**/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+            corpai/corpai-ui/node_modules
+            corpai/corpai-ui/apps/**/node_modules
+            corpai/corpai-ui/libs/**/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('corpai/corpai-ui/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
       # Step 4: Install dependencies
       - name: Install dependencies
-        run: npm install
+        run: npm ci  # Ensures clean install, uses package-lock.json for consistency
 
       # Step 5: Build the Next.js project (Nx build with static export)
       - name: Build project
-        run: npm run nx build corpai-ui
+        run: npx nx build corpai-ui --prod
 
       # Step 6: Configure AWS credentials
       - name: Configure AWS credentials
@@ -55,7 +56,4 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       # Step 7: Sync static build files to S3 bucket
-      - name: Deploy to S3
-        run: |
-          aws s3 sync apps/corpai-ui/out/ s3://corpai.io --delete
-
+     
