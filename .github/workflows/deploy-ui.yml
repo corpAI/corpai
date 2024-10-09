@@ -1,51 +1,59 @@
-name: Deploy to S3 and CloudFront
+name: Deploy to S3
 
 on:
   push:
-    branches:
-      - main
     paths:
-      - 'corpai-ui/**'
+      - 'corpai/corpai-ui/**'  # Trigger only when files in this directory change
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: corpai/corpai-ui  # Set the working directory to the monorepo's root
+
     steps:
-    # Step 1: Checkout repository
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      # Step 1: Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    # Step 2: Set up Node.js
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: 18
+      # Step 2: Set up Node.js (use the Node.js version compatible with Next.js v14.1)
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'  # Change to match your project's Node.js version
 
-    # Step 3: Install dependencies
-    # Ensure to point to the correct working directory where `package.json` is located
-    - name: Install dependencies
-      run: npm install
-      working-directory: ./corpai  # Adjust this if package.json is at the root
+      # Step 3: Cache Node.js dependencies to speed up builds
+      - name: Cache Node.js dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            node_modules
+            apps/**/node_modules
+            libs/**/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
-    # Step 4: Build the project using Nx
-    # Ensure we're building the specific app within the monorepo
-    - name: Build the project
-      run: npx nx run corpai-ui:build
-      working-directory: ./corpai
+      # Step 4: Install dependencies
+      - name: Install dependencies
+        run: npm install
 
-    # Step 5: Configure AWS credentials for deployment
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ secrets.AWS_REGION }}
+      # Step 5: Build the Next.js project (Nx build with static export)
+      - name: Build project
+        run: npm run nx build corpai-ui
 
-    # Step 6: Deploy to S3
-    # In Nx, the build output is typically in the `dist/apps/<app-name>` folder
-    - name: Deploy to S3
-      run: |
-        aws s3 sync dist/apps/corpai-ui/.next/static s3://corpai.io/static --delete
-        aws s3 cp dist/apps/corpai-ui/.next/server/pages/ s3://corpai.io/ --recursive
-      working-directory: ./corpai
+      # Step 6: Configure AWS credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # Step 7: Sync static build files to S3 bucket
+      - name: Deploy to S3
+        run: |
+          aws s3 sync apps/corpai-ui/out/ s3://corpai.io --delete
+

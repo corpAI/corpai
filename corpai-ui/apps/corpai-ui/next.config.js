@@ -9,13 +9,15 @@ const { composePlugins, withNx } = require('@nx/next');
 const nextConfig = {
   nx: {
     // Set this to true if you would like to use SVGR
-    // See: https://github.com/gregberge/svgr
     svgr: false,
   },
+  // New static export configuration for Next.js v14.1
+  output: 'export',  // This replaces the deprecated 'next export' command
+  trailingSlash: true,  // Optional: Enable trailing slashes for routes
 };
 
 const plugins = [
-  // Add more Next.js plugins to this list if needed. test
+  // Add more Next.js plugins to this list if needed.
   withNx,
 ];
 
