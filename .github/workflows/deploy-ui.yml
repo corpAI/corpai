@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'apps/corpai-ui/**'
+      - 'corpai-ui/**'
 
 jobs:
   build-and-deploy:
@@ -30,7 +30,7 @@ jobs:
     # Step 4: Build the project using Nx
     # Ensure we're building the specific app within the monorepo
     - name: Build the project
-      run: npx nx build corpai-ui
+      run: npx nx run corpai-ui:build
 
     # Step 5: Configure AWS credentials for deployment
     - name: Configure AWS credentials
