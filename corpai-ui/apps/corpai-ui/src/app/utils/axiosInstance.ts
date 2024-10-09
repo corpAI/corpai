@@ -10,7 +10,7 @@ const setLoading = (value: boolean) => {
 };
 
 const axiosInstance = axios.create({
-  baseURL: config.backendHost,
+  baseURL: config.backendHost, // Getting host from the config file
 });
 
 // Add a request interceptor to show the loading spinner

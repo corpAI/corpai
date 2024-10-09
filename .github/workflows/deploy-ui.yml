@@ -5,37 +5,45 @@ on:
     branches:
       - main
     paths:
-      - 'corpai-ui/**'
+      - 'apps/corpai-ui/**'
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
+    # Step 1: Checkout repository
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    # Step 2: Set up Node.js
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
         node-version: 18
 
+    # Step 3: Install dependencies
+    # Since this is an Nx monorepo, we run `npm install` at the root
     - name: Install dependencies
       run: npm install
-      working-directory: ./corpai/apps/corpai-ui
 
+    # Step 4: Build the project using Nx
+    # Ensure we're building the specific app within the monorepo
     - name: Build the project
-      run: npx nx run corpai-ui:build
+      run: npx nx build corpai-ui
 
+    # Step 5: Configure AWS credentials for deployment
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region:  ${{ secrets.AWS_REGION }}
+        aws-region: ${{ secrets.AWS_REGION }}
 
+    # Step 6: Deploy to S3
+    # In Nx, the build output is typically in the `dist/apps/<app-name>` folder
     - name: Deploy to S3
       run: |
-        aws s3 sync apps/corpai-ui/.next/static s3://corpai.io/static --delete
-        aws s3 cp apps/corpai-ui/.next/server/pages/ s3://corpai.io/ --recursive
+        aws s3 sync dist/apps/corpai-ui/.next/static s3://corpai.io/static --delete
+        aws s3 cp dist/apps/corpai-ui/.next/server/pages/ s3://corpai.io/ --recursive
 
