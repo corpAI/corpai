@@ -1,4 +1,5 @@
 import axios from 'axios';
+import config from '../config';
 
 let isLoading = false;
 const setLoading = (value: boolean) => {
@@ -9,16 +10,16 @@ const setLoading = (value: boolean) => {
 };
 
 const axiosInstance = axios.create({
-  baseURL: 'https://lasu3k8h94.execute-api.us-west-2.amazonaws.com/dev',
+  baseURL: config.backendHost,
 });
 
 // Add a request interceptor to show the loading spinner
 axiosInstance.interceptors.request.use(
-  (config) => {
+  (config: any) => {
     setLoading(true);
     return config;
   },
-  (error) => {
+  (error: any) => {
     setLoading(false);
     return Promise.reject(error);
   }
@@ -26,11 +27,11 @@ axiosInstance.interceptors.request.use(
 
 // Add a response interceptor to hide the loading spinner
 axiosInstance.interceptors.response.use(
-  (response) => {
+  (response: any) => {
     setLoading(false);
     return response;
   },
-  (error) => {
+  (error: { response: { status: number; }; }) => {
     setLoading(false);
     if (error.response && (error.response.status === 401 || error.response.status === 403)) {
       if (typeof window !== 'undefined') {
