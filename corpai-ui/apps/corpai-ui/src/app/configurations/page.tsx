@@ -93,7 +93,6 @@ const Configurations = () => {
   const getColumnDefs = () => {
     if (configurations.length === 0) return [];
 
-    // Generate columns dynamically based on keys in the configurations data
     const keys = Object.keys(configurations[0]);
     const columns = keys.map((key) => {
       if (key === 'config_name' || key === 'provider') {
