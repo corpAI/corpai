@@ -23,14 +23,16 @@ jobs:
         node-version: 18
 
     # Step 3: Install dependencies
-    # Since this is an Nx monorepo, we run `npm install` at the root
+    # Run `npm install` at the root of the monorepo
     - name: Install dependencies
       run: npm install
+      working-directory: ./
 
     # Step 4: Build the project using Nx
     # Ensure we're building the specific app within the monorepo
     - name: Build the project
       run: npx nx run corpai-ui:build
+      working-directory: ./
 
     # Step 5: Configure AWS credentials for deployment
     - name: Configure AWS credentials
@@ -46,4 +48,10 @@ jobs:
       run: |
         aws s3 sync dist/apps/corpai-ui/.next/static s3://corpai.io/static --delete
         aws s3 cp dist/apps/corpai-ui/.next/server/pages/ s3://corpai.io/ --recursive
+      working-directory: ./
 
+    # Step 7: Invalidate CloudFront cache
+    - name: Invalidate CloudFront
+      run: |
+        aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+      working-directory: ./
