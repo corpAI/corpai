@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../utils/axiosInstance';
 import VerticalNavbar from '../components/VerticalNavbar';
-import styles from '../styles/chat.module.css';
+import styles from '../styles/Chat.module.css';
 import config from '../config';
 import LoadingSpinner from '../components/LoadingSpinner';
 import AuthWrapper from '../utils/authWrapper';
