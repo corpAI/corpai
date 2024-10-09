@@ -125,7 +125,7 @@ const Configurations = () => {
       }
     });
 
-    // Add Actions column
+    // Add Actions column, testing
     columns.push({
       headerName: 'Actions',
       cellRendererFramework: (params: any) => (
