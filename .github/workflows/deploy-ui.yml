@@ -14,7 +14,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: /  # Set the working directory to the Nx monorepo root
+        working-directory: ./corpai-ui  # Set the working directory to the Nx monorepo root
 
     steps:
       # Step 1: Checkout the repository
@@ -29,7 +29,7 @@ jobs:
 
       # Step 4: Install dependencies
       - name: Install dependencies
-        run: npm ci  # Ensures clean install, uses package-lock.json for consistency
+        run: npm install  # Ensures clean install, uses package-lock.json for consistency
 
       # Step 5: Build the Next.js project (Nx build with static export)
       - name: Build project
