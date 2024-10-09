@@ -27,18 +27,6 @@ jobs:
         with:
           node-version: '18.x'  # Use the Node.js version compatible with your project
 
-      # Step 3: Cache Node.js dependencies to speed up builds
-      - name: Cache Node.js dependencies
-        uses: actions/cache@v3
-        with:
-          path: |
-            corpai/corpai-ui/node_modules
-            corpai/corpai-ui/apps/**/node_modules
-            corpai/corpai-ui/libs/**/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('corpai/corpai-ui/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
       # Step 4: Install dependencies
       - name: Install dependencies
         run: npm ci  # Ensures clean install, uses package-lock.json for consistency
@@ -56,4 +44,6 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       # Step 7: Sync static build files to S3 bucket
-     
+      - name: Deploy to S3
+        run: |
+          aws s3 sync apps/corpai-ui/out/ s3://corpai.io --delete
