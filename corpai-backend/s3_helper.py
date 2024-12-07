@@ -1,16 +1,22 @@
 import boto3
 
-# Initialize S3 client globally
-s3_client = boto3.client('s3')
-
-def fetch_files_from_s3(bucket_name, file_keys):
+def fetch_files_from_s3(bucket_name, file_keys, access_key, secret_key, region):
     """
-    Fetches multiple files from an S3 bucket and combines their contents.
-
+    Fetches multiple files from an S3 bucket and combines their contents using provided credentials.
+    
     :param bucket_name: The name of the S3 bucket.
     :param file_keys: List of file keys to fetch from the S3 bucket, or None to fetch all files.
+    :param access_key: AWS access key from the configuration.
+    :param secret_key: AWS secret access key from the configuration.
+    :param region: AWS region from the configuration.
     :return: Combined content of the files, or an error message.
     """
+    # Initialize S3 client with provided credentials
+    s3_client = boto3.client('s3', 
+                             aws_access_key_id=access_key, 
+                             aws_secret_access_key=secret_key, 
+                             region_name=region)
+
     combined_content = ""
 
     try:
