@@ -1,0 +1,49 @@
+name: Deploy to S3
+
+on:
+  push:
+    branches:
+      - main  # Trigger on push to main branch
+    paths:
+      - 'corpai-pub-ui/**'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./corpai-pub-ui  # Set the working directory to the Nx monorepo root
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js (use the Node.js version compatible with Next.js v14.1)
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'  # Use the Node.js version compatible with your project
+
+      # Step 4: Install dependencies
+      - name: Install dependencies
+        run: npm install  # Ensures clean install, uses package-lock.json for consistency
+
+      # Step 5: Build the Next.js project (Nx build with static export)
+      - name: Build project
+        run: npm run build
+
+      # Step 6: Configure AWS credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # Step 7: Sync static build files to S3 bucket
+      - name: Deploy to S3
+        run: |
+          aws s3 sync apps/corpai-pub-ui/out/ s3://corpai.io --delete
