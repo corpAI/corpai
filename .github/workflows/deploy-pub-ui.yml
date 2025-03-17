@@ -33,11 +33,6 @@ jobs:
         run: npm run build
         working-directory: ./corpai-pub-ui
 
-      # 5) Export a static version of the Next.js site (generates `corpai-pub-ui/out/`)
-      - name: Export Next.js
-        run: npm run export
-        working-directory: ./corpai-pub-ui
-
       # 6) Configure AWS credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
