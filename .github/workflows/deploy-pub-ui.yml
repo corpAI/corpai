@@ -1,0 +1,52 @@
+name: Deploy Pub to S3
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'corpai-pub-ui/**'
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # 1) Check out your code
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      # 2) Set up Node (use the version compatible with your Next.js setup)
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+
+      # 3) Install dependencies
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./corpai-pub-ui
+
+      # 4) Build the Next.js project
+      - name: Build Next.js
+        run: npm run build
+        working-directory: ./corpai-pub-ui
+
+      # 5) Export a static version of the Next.js site (generates `corpai-pub-ui/out/`)
+      - name: Export Next.js
+        run: npm run export
+        working-directory: ./corpai-pub-ui
+
+      # 6) Configure AWS credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # 7) Sync the 'out' folder to your S3 bucket
+      - name: Deploy to S3
+        run: |
+          aws s3 sync ./corpai-pub-ui/out s3://corpai.io --delete
