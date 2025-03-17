@@ -5,6 +5,15 @@
 		},
 		{
 			"path": "corpai-backend"
+		},
+		{
+			"path": "corpai-pub-ui"
+		},
+		{
+			"path": "../../Downloads/tailwind-plus-studio/studio-ts"
 		}
-	]
+	],
+	"settings": {
+		"nxConsole.nxWorkspacePath": ""
+	}
 }
