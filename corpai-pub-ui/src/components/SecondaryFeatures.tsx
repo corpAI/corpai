@@ -160,6 +160,7 @@ function FeaturesMobile() {
                 src={feature.image}
                 alt=""
                 sizes="52.75rem"
+                unoptimized
               />
             </div>
           </div>
@@ -211,6 +212,7 @@ function FeaturesDesktop() {
                       src={feature.image}
                       alt=""
                       sizes="52.75rem"
+                      unoptimized
                     />
                   </div>
                 </TabPanel>

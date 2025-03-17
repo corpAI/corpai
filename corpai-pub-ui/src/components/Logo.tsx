@@ -9,6 +9,7 @@ export function Logo(props: Omit<React.ComponentProps<typeof Image>, 'src' | 'al
       width={500}
       height={300}
       {...props}
+      unoptimized
     />
   )
 }
