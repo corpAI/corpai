@@ -229,21 +229,37 @@ function FeaturesDesktop() {
 export function SecondaryFeatures() {
   return (
     <section
-      id="secondary-features"
+      id="who-we-are"
       aria-label="Features for simplifying everyday business tasks"
       className="pt-10 pb-14 sm:pt-32 sm:pb-20 lg:pb-32"
     >
       <Container>
-        <div className="mx-auto max-w-2xl md:text-center">
-          <h2 className="font-display text-3xl tracking-tight text-slate-900 sm:text-4xl">
+        <div className="mx-auto max-w-2xl">
+          <h2 className="font-display text-3xl tracking-tight text-slate-900 sm:text-4xl md:text-center">
             Who we are.
           </h2>
-          <p className="mt-4 text-lg tracking-tight text-slate-700">
-          Built by Experts, Driven by Innovation.
+          <p className="mt-4 text-lg tracking-tight text-slate-700 md:text-center">
+            Built by Experts, Driven by Innovation.
           </p>
-          <p className="mt-4 text-lg tracking-tight text-slate-700">
-          CorpAI is founded by industry veterans and former leaders from global tech giants such as Google, Amazon, McAfee, and Microsoft. With over two decades of experience in building large-scale distributed platforms, our team understands the intricacies of enterprise AI transformation. We are committed to helping organizations navigate the AI revolution, equipping them with the tools and platforms needed to thrive in an intelligent business landscape.
-          </p>
+
+          <ul>
+            <li className="mt-4 max-w-5xl text-lg tracking-tight text-slate-700">
+              We are industry veterans with extensive leadership and product
+              development experience. Our team includes former alumni from
+              Google, Amazon, McAfee, and other leading tech companies.
+            </li>
+            <li className="mt-4 text-lg tracking-tight text-slate-700">
+              With over two decades of expertise in software and security, we
+              have built large-scale distributed platforms that power
+              enterprises globally. Our deep understanding of AI, software, and
+              security is shaping CorpAI into a transformative platform.
+            </li>
+            <li className="mt-4 text-lg tracking-tight text-slate-700">
+              We are committed to building the CorpAI platform and tools to help
+              organizations navigate their AI journey with confidence and
+              efficiency.
+            </li>
+          </ul>
         </div>
         {/* <FeaturesMobile />
         <FeaturesDesktop /> */}
@@ -251,4 +267,3 @@ export function SecondaryFeatures() {
     </section>
   )
 }
-

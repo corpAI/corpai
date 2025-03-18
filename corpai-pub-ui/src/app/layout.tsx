@@ -39,7 +39,7 @@ export default function RootLayout({
         lexend.variable,
       )}
     >
-      <body className="flex h-full flex-col">{children}</body>
+      <body style={{ zoom: "80%" }} className="flex h-full flex-col text-justify">{children}</body>
     </html>
   )
 }

@@ -14,30 +14,27 @@ import screenshotVatReturns from '@/images/screenshots/vat-returns.png'
 
 const features = [
   {
-    title: 'Seamlessly integrate AI into enterprise workflows',
-    description:
-      "Bridge the gap between traditional data systems and modern AI-powered applications.",
-    image: screenshotPayroll,
+    "title": "AI-Powered Transformation",
+    "description": "CorpAI provides platforms and tools to help enterprises in their AI journey, enabling seamless AI adoption and automation.",
+    "image": screenshotPayroll
   },
   {
-    title: 'Empower employees with intelligent automation ',
-    description:
-      "Reduce manual effort and streamline operations with natural language-driven interactions.",
-    image: screenshotExpenses,
+    "title": "Seamless AI Integration",
+    "description": "CorpAI LLM and agent allow organizations and employees to interact with enterprise applications securely using natural language.",
+    "image": screenshotExpenses
   },
   {
-    title: 'Ensure secure, compliant AI integration',
-    description:
-      "Govern AI interactions safely, maintaining enterprise-grade security and compliance.",
-    image: screenshotVatReturns,
+    "title": "AI Governance & Compliance",
+    "description": "CorpAI provides GRC tools and frameworks to ensure enterprises integrate AI safely, securely, and in compliance with regulations.",
+    "image": screenshotVatReturns
   },
   {
-    title: 'Eliminate data silos ',
-    description:
-      'Enable smooth cross-functional access to business data for informed decision-making.',
-    image: screenshotReporting,
-  },
+    "title": "Smart Data & App Connectivity",
+    "description": "CorpAI abstracts the complexities of enterprise integration, enabling AI-powered, cross-boundary data and application connectivity.",
+    "image": screenshotReporting
+  }
 ]
+
 
 export function PrimaryFeatures() {
   let [tabOrientation, setTabOrientation] = useState<'horizontal' | 'vertical'>(
@@ -93,7 +90,7 @@ export function PrimaryFeatures() {
                     <div
                       key={feature.title}
                       className={clsx(
-                        'group relative rounded-full px-4 py-1 lg:rounded-l-xl lg:rounded-r-none lg:p-6',
+                        'group relative rounded-full px-4 py-1 lg:rounded-l-xl lg:rounded-r-none lg:p-6 ',
                         selectedIndex === featureIndex
                           ? 'bg-white lg:bg-white/10 lg:ring-1 lg:ring-white/10 lg:ring-inset'
                           : 'hover:bg-white/10 lg:hover:bg-white/5',
@@ -108,7 +105,7 @@ export function PrimaryFeatures() {
                               : 'text-blue-100 hover:text-white lg:text-white',
                           )}
                         >
-                          <span className="absolute inset-0 rounded-full lg:rounded-l-xl lg:rounded-r-none" />
+                          <span className="absolute inset-0 rounded-full lg:rounded-l-xl lg:rounded-r-none text-left"  />
                           {feature.title}
                         </Tab>
                       </h3>

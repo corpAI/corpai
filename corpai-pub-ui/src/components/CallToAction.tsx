@@ -26,7 +26,7 @@ export function CallToAction() {
           <p className="mt-4 text-lg tracking-tight text-white">
             It’s time to take control of your day-to-day workflows. Sign-up with us to unleash the power of AI.
           </p>
-          <Button href="/register" color="white" className="mt-10">
+          <Button href="#contact-us" color="white" className="mt-10">
             Contact us
           </Button>
         </div>
