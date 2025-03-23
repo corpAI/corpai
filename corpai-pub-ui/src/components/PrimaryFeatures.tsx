@@ -70,7 +70,7 @@ export function PrimaryFeatures() {
         unoptimized
       />
       <Container className="relative" >
-        <div className="max-w-2xl md:mx-auto md:text-center xl:max-w-none pt-20"  id="features">
+        <div className="max-w-2xl md:mx-auto md:text-center xl:max-w-none pt-45"  id="features">
           <h2 className="font-display text-3xl tracking-tight text-white sm:text-4xl md:text-5xl">
           AI Transformation for the Modern Enterprise
           </h2>

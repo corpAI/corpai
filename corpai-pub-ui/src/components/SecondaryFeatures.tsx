@@ -1,269 +1,97 @@
-'use client'
+"use client";
 
-import { useId } from 'react'
-import Image, { type ImageProps } from 'next/image'
-import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
-import clsx from 'clsx'
+import React, { useState } from "react";
+import Image from "next/image";
+import clsx from "clsx";
 
-import { Container } from '@/components/Container'
-import screenshotContacts from '@/images/screenshots/contacts.png'
-import screenshotInventory from '@/images/screenshots/inventory.png'
-import screenshotProfitLoss from '@/images/screenshots/profit-loss.png'
+// Example images — replace with your own imports
+import santhosh from "@/images/santhosh.png";
+import teja from "@/images/teja.png";
 
-interface Feature {
-  name: React.ReactNode
-  summary: string
-  description: string
-  image: ImageProps['src']
-  icon: React.ComponentType
-}
-
-const features: Array<Feature> = [
-  {
-    name: 'Reporting',
-    summary: 'Stay on top of things with always up-to-date reporting features.',
-    description:
-      'We talked about reporting in the section above but we needed three items here, so mentioning it one more time for posterity.',
-    image: screenshotProfitLoss,
-    icon: function ReportingIcon() {
-      let id = useId()
-      return (
-        <>
-          <defs>
-            <linearGradient
-              id={id}
-              x1="11.5"
-              y1={18}
-              x2={36}
-              y2="15.5"
-              gradientUnits="userSpaceOnUse"
-            >
-              <stop offset=".194" stopColor="#fff" />
-              <stop offset={1} stopColor="#6692F1" />
-            </linearGradient>
-          </defs>
-          <path
-            d="m30 15-4 5-4-11-4 18-4-11-4 7-4-5"
-            stroke={`url(#${id})`}
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </>
-      )
+export function TeamStackedCards() {
+  const teamMembers = [
+    {
+      name: "Santhosh Kumar. E",
+      role: "Founder",
+      imageUrl: santhosh,
+      summary: "I love coding",
+      longDescription:
+        "Santhosh brings over two decades of leadership in software development and security to CorpAI. As a former team member at industry giants such as Google, Amazon, and McAfee, he has a proven track record in building large-scale distributed platforms and developing cutting-edge security solutions. His extensive experience and innovative approach are instrumental in shaping CorpAI’s vision and driving product excellence.",
     },
-  },
-  {
-    name: 'Inventory',
-    summary:
-      'Never lose track of what’s in stock with accurate inventory tracking.',
-    description:
-      'We don’t offer this as part of our software but that statement is inarguably true. Accurate inventory tracking would help you for sure.',
-    image: screenshotInventory,
-    icon: function InventoryIcon() {
-      return (
-        <>
-          <path
-            opacity=".5"
-            d="M8 17a1 1 0 0 1 1-1h18a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2Z"
-            fill="#fff"
-          />
-          <path
-            opacity=".3"
-            d="M8 24a1 1 0 0 1 1-1h18a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2Z"
-            fill="#fff"
-          />
-          <path
-            d="M8 10a1 1 0 0 1 1-1h18a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2Z"
-            fill="#fff"
-          />
-        </>
-      )
-    },
-  },
-  {
-    name: 'Contacts',
-    summary:
-      'Organize all of your contacts, service providers, and invoices in one place.',
-    description:
-      'This also isn’t actually a feature, it’s just some friendly advice. We definitely recommend that you do this, you’ll feel really organized and professional.',
-    image: screenshotContacts,
-    icon: function ContactsIcon() {
-      return (
-        <>
-          <path
-            opacity=".5"
-            d="M25.778 25.778c.39.39 1.027.393 1.384-.028A11.952 11.952 0 0 0 30 18c0-6.627-5.373-12-12-12S6 11.373 6 18c0 2.954 1.067 5.659 2.838 7.75.357.421.993.419 1.384.028.39-.39.386-1.02.036-1.448A9.959 9.959 0 0 1 8 18c0-5.523 4.477-10 10-10s10 4.477 10 10a9.959 9.959 0 0 1-2.258 6.33c-.35.427-.354 1.058.036 1.448Z"
-            fill="#fff"
-          />
-          <path
-            d="M12 28.395V28a6 6 0 0 1 12 0v.395A11.945 11.945 0 0 1 18 30c-2.186 0-4.235-.584-6-1.605ZM21 16.5c0-1.933-.5-3.5-3-3.5s-3 1.567-3 3.5 1.343 3.5 3 3.5 3-1.567 3-3.5Z"
-            fill="#fff"
-          />
-        </>
-      )
-    },
-  },
-]
+    {
+      name: "Sri Teja Kumar. S ",
+      role: "Founding member - Technical",
+      imageUrl: teja,
+      summary: "Passionate about agile workflows.",
+      longDescription:
+        "Sri Teja Kumar brings extensive experience in software engineering, specializing in frontend technologies and cloud-based solutions. With expertise in Angular, React, Next.js, and AWS, Sri Teja Kumar has successfully delivered robust enterprise applications, leveraging advanced tools and frameworks. Passionate about user experience and product innovation.",
+    }
+  ];
 
-function Feature({
-  feature,
-  isActive,
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<'div'> & {
-  feature: Feature
-  isActive: boolean
-}) {
+  // Track which card is selected
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
   return (
-    <div
-      className={clsx(className, !isActive && 'opacity-75 hover:opacity-100')}
-      {...props}
-    >
-      <div
-        className={clsx(
-          'w-9 rounded-lg',
-          isActive ? 'bg-blue-600' : 'bg-slate-500',
-        )}
-      >
-        <svg aria-hidden="true" className="h-9 w-9" fill="none">
-          <feature.icon />
-        </svg>
-      </div>
-      <h3
-        className={clsx(
-          'mt-6 text-sm font-medium',
-          isActive ? 'text-blue-600' : 'text-slate-600',
-        )}
-      >
-        {feature.name}
-      </h3>
-      <p className="mt-2 font-display text-xl text-slate-900">
-        {feature.summary}
-      </p>
-      <p className="mt-4 text-sm text-slate-600">{feature.description}</p>
-    </div>
-  )
-}
+    <section style={{ paddingTop: '8%' }} className="py-6 bg-slate-50" id="our-team">
+      <div className="container mx-auto px-4">
+        <h2 className="font-display text-3xl tracking-tight text-gray-900 sm:text-4xl mb-6 px-3">Team</h2>
 
-function FeaturesMobile() {
-  return (
-    <div className="-mx-4 mt-20 flex flex-col gap-y-10 overflow-hidden px-4 sm:-mx-6 sm:px-6 lg:hidden">
-      {features.map((feature) => (
-        <div key={feature.summary}>
-          <Feature feature={feature} className="mx-auto max-w-2xl" isActive />
-          <div className="relative mt-10 pb-10">
-            <div className="absolute -inset-x-4 top-8 bottom-0 bg-slate-200 sm:-inset-x-6" />
-            <div className="relative mx-auto w-[52.75rem] overflow-hidden rounded-xl bg-white ring-1 shadow-lg shadow-slate-900/5 ring-slate-500/10">
-              <Image
-                className="w-full"
-                src={feature.image}
-                alt=""
-                sizes="52.75rem"
-                unoptimized
-              />
-            </div>
+        {/* Main layout: left side for details, right side for stacked cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* LEFT SIDE: Show details of the selected team member */}
+          <div className="p-4">
+            <h3 className="text-2xl mb-2 font-display tracking-tight ">
+              {teamMembers[selectedIndex].name}
+            </h3>
+            <p className="text-gray-600 font-display tracking-tight ">{teamMembers[selectedIndex].role}</p>
+            <p className="mt-4 text-gray-700  tracking-tight">
+              {teamMembers[selectedIndex].longDescription}
+            </p>
+          </div>
+
+          {/* RIGHT SIDE: Stacked cards */}
+          <div className="relative w-full h-96 left-[30%] top-[-20%]">
+            {teamMembers.map((member, index) => (
+              <div
+                key={member.name}
+                className={clsx(
+                  // Basic card styles
+                  "absolute w-70 h-90 bg-white border border-gray-300 rounded-lg shadow-md",
+                  "transition-transform hover:-translate-y-4 hover:scale-105 cursor-pointer",
+                  // If selected, bring to front
+                  selectedIndex === index && "z-50"
+                )}
+                style={{
+                  // Stagger each card’s position (tweak these offsets as desired)
+                  left: `${index * 4}rem`,
+                  top: `${index * 2}rem`,
+                  // Use a higher z-index if this card is selected
+                  zIndex: selectedIndex === index ? 999 : index,
+                }}
+                onClick={() => setSelectedIndex(index)}
+              >
+                {/* Card image (top half) */}
+                <div className="relative w-full h-[80%]">
+                  <Image
+                    src={member.imageUrl}
+                    alt={member.name}
+                    fill
+                    style={{ objectFit: "cover" }}
+                    className="rounded-t-lg"
+                    unoptimized
+                  />
+                </div>
+
+                {/* Card text (bottom half) */}
+                <div className="p-2">
+                  <h4 className="text-gray-800 font-display tracking-tight ">{member.name}</h4>
+                  <p className="text-sm text-gray-500 tracking-tight">{member.role}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-      ))}
-    </div>
-  )
-}
-
-function FeaturesDesktop() {
-  return (
-    <TabGroup className="hidden lg:mt-20 lg:block">
-      {({ selectedIndex }) => (
-        <>
-          <TabList className="grid grid-cols-3 gap-x-8">
-            {features.map((feature, featureIndex) => (
-              <Feature
-                key={feature.summary}
-                feature={{
-                  ...feature,
-                  name: (
-                    <Tab className="data-selected:not-data-focus:outline-hidden">
-                      <span className="absolute inset-0" />
-                      {feature.name}
-                    </Tab>
-                  ),
-                }}
-                isActive={featureIndex === selectedIndex}
-                className="relative"
-              />
-            ))}
-          </TabList>
-          <TabPanels className="relative mt-20 overflow-hidden rounded-4xl bg-slate-200 px-14 py-16 xl:px-16">
-            <div className="-mx-5 flex">
-              {features.map((feature, featureIndex) => (
-                <TabPanel
-                  static
-                  key={feature.summary}
-                  className={clsx(
-                    'px-5 transition duration-500 ease-in-out data-selected:not-data-focus:outline-hidden',
-                    featureIndex !== selectedIndex && 'opacity-60',
-                  )}
-                  style={{ transform: `translateX(-${selectedIndex * 100}%)` }}
-                  aria-hidden={featureIndex !== selectedIndex}
-                >
-                  <div className="w-[52.75rem] overflow-hidden rounded-xl bg-white ring-1 shadow-lg shadow-slate-900/5 ring-slate-500/10">
-                    <Image
-                      className="w-full"
-                      src={feature.image}
-                      alt=""
-                      sizes="52.75rem"
-                      unoptimized
-                    />
-                  </div>
-                </TabPanel>
-              ))}
-            </div>
-            <div className="pointer-events-none absolute inset-0 rounded-4xl ring-1 ring-slate-900/10 ring-inset" />
-          </TabPanels>
-        </>
-      )}
-    </TabGroup>
-  )
-}
-
-export function SecondaryFeatures() {
-  return (
-    <section
-      id="who-we-are"
-      aria-label="Features for simplifying everyday business tasks"
-      className="pt-10 pb-14 sm:pt-32 sm:pb-20 lg:pb-32"
-    >
-      <Container>
-        <div className="mx-auto max-w-2xl">
-          <h2 className="font-display text-3xl tracking-tight text-slate-900 sm:text-4xl md:text-center">
-            Who we are.
-          </h2>
-          <p className="mt-4 text-lg tracking-tight text-slate-700 md:text-center">
-            Built by Experts, Driven by Innovation.
-          </p>
-
-          <ul>
-            <li className="mt-4 max-w-5xl text-lg tracking-tight text-slate-700">
-              We are industry veterans with extensive leadership and product
-              development experience. Our team includes former alumni from
-              Google, Amazon, McAfee, and other leading tech companies.
-            </li>
-            <li className="mt-4 text-lg tracking-tight text-slate-700">
-              With over two decades of expertise in software and security, we
-              have built large-scale distributed platforms that power
-              enterprises globally. Our deep understanding of AI, software, and
-              security is shaping CorpAI into a transformative platform.
-            </li>
-            <li className="mt-4 text-lg tracking-tight text-slate-700">
-              We are committed to building the CorpAI platform and tools to help
-              organizations navigate their AI journey with confidence and
-              efficiency.
-            </li>
-          </ul>
-        </div>
-        {/* <FeaturesMobile />
-        <FeaturesDesktop /> */}
-      </Container>
+      </div>
     </section>
-  )
+  );
 }

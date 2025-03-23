@@ -89,12 +89,12 @@ export function Header() {
         <nav className="relative z-50 flex justify-between">
           <div className="flex items-center md:gap-x-12">
             <Link href="#" aria-label="Home">
-              <Logo className="h-40 w-auto" />
+              <Logo className="h-30 w-auto" />
             </Link>
             <div className="hidden md:flex md:gap-x-6">
               <NavLink href="#problem-solution">Why CorpAI?</NavLink>
-              <NavLink href="#features">Features</NavLink>
-              <NavLink href="#who-we-are">Who we are</NavLink>
+              <NavLink href="#features">Services</NavLink>
+              <NavLink href="#our-team">Team</NavLink>
               <NavLink href="#faq">FAQs</NavLink>
               {/* <NavLink href="#pricing">Pricing</NavLink> */}
               <NavLink href="#contact-us">Contact us</NavLink>

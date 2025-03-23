@@ -1,11 +1,18 @@
-
 import { Container } from '@/components/Container'
+import { ChevronDownIcon } from '@heroicons/react/24/solid'
 
 export function Hero() {
+  const handleScroll = () => {
+    const section = document.getElementById('problem-solution')
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
+
   return (
-    <Container className="pt-20 pb-40 text-center lg:pt-32">
+    <Container className="pt-20 pb-40 text-center lg:pt-32 relative">
       <h1 className="mx-auto max-w-4xl font-display text-5xl font-medium tracking-tight text-slate-900 sm:text-7xl">
-      Enable {' '}
+        Enable{' '}
         <span className="relative whitespace-nowrap text-blue-600">
           <svg
             aria-hidden="true"
@@ -19,39 +26,38 @@ export function Hero() {
         </span>{' '} Organizations!
       </h1>
       <p className="mx-auto mt-6 max-w-2xl text-lg tracking-tight text-slate-700">
-      CorpAI provides cutting-edge platforms and tools designed to accelerate AI adoption and drive business transformation. 
+        CorpAI provides cutting-edge platforms and tools designed to accelerate AI adoption and drive business transformation.
       </p>
-      
+
       <div className="mt-15 mb-10 lg:mt-15 lg:mb-10">
         <p className="font-display text-base text-slate-600">
-        Modern businesses struggle with fragmented data and complex AI adoption. Despite digital advancements, siloed systems hinder efficiency and drive up costs. Enterprise applications are evolving towards AI-driven solutions, yet organizations face challenges in integration, investment, and adaptation.
+          Modern businesses struggle with fragmented data and complex AI adoption. Despite digital advancements, siloed systems hinder efficiency and drive up costs. Enterprise applications are evolving towards AI-driven solutions, yet organizations face challenges in integration, investment, and adaptation.
         </p>
         <ul
           role="list"
           className="mt-2 flex items-center justify-center gap-x-8 sm:flex-col sm:gap-x-0 sm:gap-y-10 xl:flex-row xl:gap-x-12 xl:gap-y-0"
         >
-          {[
-            [
-              { name: '', description: 'CorpAI bridges this gap by enabling businesses to seamlessly integrate AI-driven technologies into their workflows. Our mission is to empower enterprises with futuristic AI solutions that facilitate secure, compliant, and intuitive interactions with siloed data sources and enterprise applications—turning complexity into simplicity.' },
-              
-            ]
-          ].map((group, groupIndex) => (
+          {[ [{ name: '', description: 'CorpAI bridges this gap by enabling businesses to seamlessly integrate AI-driven technologies into their workflows. Our mission is to empower enterprises with futuristic AI solutions that facilitate secure, compliant, and intuitive interactions with siloed data sources and enterprise applications—turning complexity into simplicity.' }],].map((group, groupIndex) => (
             <li key={groupIndex}>
-              <ul
-                role="list"
-                className="font-display text-center text-slate-600"
-              >
+              <ul role="list" className="font-display text-center text-slate-600">
                 {group.map((company) => (
                   <li key={company.name} className="flex">
-                   <p>
-                    {company.name} {company.description}
-                   </p>
+                    <p>{company.description}</p>
                   </li>
                 ))}
               </ul>
             </li>
           ))}
         </ul>
+      </div>
+
+      <div className="absolute inset-x-0 bottom-8 flex justify-center">
+        <button
+          onClick={handleScroll}
+          className="animate-bounce text-blue-600 hover:text-blue-800 transition-colors duration-300 cursor-pointer"
+        >
+          <ChevronDownIcon className="h-8 w-8" aria-hidden="true" />
+        </button>
       </div>
     </Container>
   )
