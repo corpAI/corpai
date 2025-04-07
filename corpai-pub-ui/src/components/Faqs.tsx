@@ -8,38 +8,55 @@ const faqs = [
     {
       question: 'How does CorpAI help businesses adopt AI?',
       answer:
-        'CorpAI simplifies AI adoption by integrating intelligent, agentic AI solutions into your existing enterprise systems, enabling natural language interactions and automation.',
+        'CorpAI simplifies AI adoption by providing an action driven LLM which integrates seamlessly with rapidly enterprise AI agents thus enabling natural language interactions to the enterprise users.',
     },
     {
-      question: 'Do I need to replace my existing enterprise applications to use CorpAI?',
-      answer: 'No, CorpAI seamlessly integrates with your current infrastructure, enhancing your existing applications without requiring a complete overhaul.',
+      question:
+        'Do we need to replace my existing enterprise applications to use CorpAI?',
+      answer:
+        'No, CorpAI seamlessly integrates with your current enterprise applications, enhancing your existing applications without requiring a complete overhaul.',
+    },
+    {
+      question: 'Will CorpAI provide an AI agent registry?',
+      answer:
+        'Yes. CorpAI provides the AI registry. The AI registry contains vetted enterprise AI agents. It helps enterprises and local business institutes to register their AI agents. CorpAI enables the users to discover these agents and interact with these agents through natural language in a safe and secure manner.',
+    },
+  ],
+  [
+    {
+      question:
+        'What about the security and administration of these AI agents?',
+      answer:
+        'CorpAI provides the platform for enterprises to securely administer, govern and control the growing AI agents and their traffic in an enterprise.',
+    },
+    {
+      question:
+        'Will CorpAI provide the AI layers for enterprise data sources?',
+      answer:
+        'CorpAI provides the AI layer with data source integrations for enterprise users to interact with these data sources naturally.',
     },
     {
       question: 'What industries does CorpAI cater to?',
       answer:
-        'CorpAI is designed for any data-driven organization, including finance, healthcare, e-commerce, logistics, and technology enterprises.',
+        'CorpAI is designed for any data-driven organization, including finance, healthcare, e-commerce, logistics, government institutes and enterprises.',
     },
-  ],
-  [
     {
       question: 'Is CorpAI a cloud-based platform?',
       answer:
         'Yes, CorpAI is cloud-native, ensuring scalability, security, and seamless updates. We also offer on-premise solutions for enterprises with strict compliance needs.',
     },
+  ],
+  [
     {
-      question:
-        'How does CorpAI ensure data security?',
+      question: 'How does CorpAI ensure data security?',
       answer:
         'We follow enterprise-grade security protocols, including end-to-end encryption, role-based access control (RBAC), and compliance with GDPR, HIPAA, and SOC 2 standards.',
     },
     {
-      question:
-        'Does CorpAI store my business data?',
+      question: 'Does CorpAI store my business data?',
       answer:
         'No, CorpAI processes data securely without storing sensitive business information unless explicitly configured for analytics and optimization purposes.',
     },
-  ],
-  [
     {
       question: 'Can CorpAI be used in highly regulated industries?',
       answer:
@@ -72,8 +89,8 @@ export function Faqs() {
             Frequently asked questions
           </h2>
           <p className="mt-4 text-lg tracking-tight text-slate-700">
-            If you can’t find what you’re looking for, email our support team
-            and if you’re lucky someone will get back to you.
+            Need further assistance? Email our support team at{' '}
+            <a href="mailto:info@corpai.io" className="font-bold text-blue-600 dark:text-blue-500 hover:underline">info@corpai.io</a>.
           </p>
         </div>
         <ul
